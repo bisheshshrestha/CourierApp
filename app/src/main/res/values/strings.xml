@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">CourierApp</string>
+    <string name="menu_drawer_open">Drawer Open</string>
+    <string name="menu_drawer_close">Drawer Close</string>
+
+</resources>

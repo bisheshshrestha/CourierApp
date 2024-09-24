@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".WelcomeActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/logo"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="Courier App"
+        android:textAlignment="center"
+        android:textColor="@color/pure_courier_text"
+        android:textSize="32sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:text="WE DELIVERED HANDLE WITH CARE"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textStyle="italic"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="200dp"
+        android:layout_marginBottom="40dp">
+
+        <Button
+            android:id="@+id/signupButton"
+            android:layout_width="170dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="16dp"
+            android:text="SIGN UP"
+            android:background="@drawable/button_sign_up"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/signinButton"
+            android:layout_width="170dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            android:text="SIGN IN"
+            android:background="@drawable/button_sign_in"
+            app:backgroundTint="@null" />
+    </LinearLayout>
+
+</LinearLayout>

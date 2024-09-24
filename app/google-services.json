@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1013684545405",
+    "project_id": "courierapp-beb84",
+    "storage_bucket": "courierapp-beb84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013684545405:android:77684ec2bc95a1511d8e14",
+        "android_client_info": {
+          "package_name": "com.divyagyan.courierapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT5h4TlZgDHnV7sAaCDRDhalkZqaIqZ4w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
