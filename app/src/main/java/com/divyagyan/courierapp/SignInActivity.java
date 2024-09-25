@@ -1,6 +1,7 @@
 package com.divyagyan.courierapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -17,14 +18,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.regex.Pattern;
-
+import com.google.firebase.auth.FirebaseUser;
 
 public class SignInActivity extends AppCompatActivity {
-    private EditText emailSignInEditText,passwordSignInEditText;
+    private EditText emailSignInEditText, passwordSignInEditText;
     private Button userSignInButton;
-    private TextView forgotPasswordTextView,signUpTextView;
+    private TextView forgotPasswordTextView, signUpTextView;
     private ProgressBar loginProgressBar;
 
     FirebaseAuth mAuth;
@@ -43,40 +42,22 @@ public class SignInActivity extends AppCompatActivity {
         userSignInButton = findViewById(R.id.userSignInButton);
         loginProgressBar = findViewById(R.id.loginProgressBar);
 
-
+        // Set click listener for sign-in button
         userSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = emailSignInEditText.getText().toString().trim();
                 String password = passwordSignInEditText.getText().toString().trim();
 
-                if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                    emailSignInEditText.setError("Please enter a valid Email");
-                    emailSignInEditText.requestFocus();
+                // Full validation
+                if (validateInput(email, password)) {
+                    loginProgressBar.setVisibility(View.VISIBLE);
+                    signInUser(email, password);
                 }
-                if(passwordSignInEditText.length() < 6){
-                    passwordSignInEditText.setError("Please enter a valid password");
-                    passwordSignInEditText.requestFocus();
-                }
-                loginProgressBar.setVisibility(View.VISIBLE);
-
-                mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            loginProgressBar.setVisibility(View.GONE);
-                            Toast.makeText(SignInActivity.this, "User Successfully Signed In", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignInActivity.this, DashboardActivity.class));
-                        }else{
-                            loginProgressBar.setVisibility(View.GONE);
-                            Toast.makeText(SignInActivity.this, "Failed to Signed In", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
             }
         });
 
-
+        // Set click listener for forgot password
         forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +66,7 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+        // Set click listener for sign up
         signUpTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +74,64 @@ public class SignInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
+    // Method to validate email and password input
+    private boolean validateInput(String email, String password) {
+        if (email.isEmpty()) {
+            emailSignInEditText.setError("Email is required");
+            emailSignInEditText.requestFocus();
+            return false;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailSignInEditText.setError("Please enter a valid email address");
+            emailSignInEditText.requestFocus();
+            return false;
+        }
+
+        if (password.isEmpty()) {
+            passwordSignInEditText.setError("Password is required");
+            passwordSignInEditText.requestFocus();
+            return false;
+        }
+
+        if (password.length() < 6) {
+            passwordSignInEditText.setError("Password must be at least 6 characters");
+            passwordSignInEditText.requestFocus();
+            return false;
+        }
+
+        return true; // All validations passed
+    }
+
+    // Method to sign in the user using Firebase authentication
+    private void signInUser(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                loginProgressBar.setVisibility(View.GONE);
+                if (task.isSuccessful()) {
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    if (user != null) {
+                        String uid = user.getUid(); // Get the unique user ID (UID)
+
+                        // Save the UID in SharedPreferences
+                        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("user_uid", uid);
+                        editor.apply();
+
+                        // Navigate to Dashboard
+                        Intent intent = new Intent(SignInActivity.this, DashboardActivity.class);
+                        startActivity(intent);
+
+                        Toast.makeText(SignInActivity.this, "User Successfully Signed In", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(SignInActivity.this, "Failed to Sign In: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

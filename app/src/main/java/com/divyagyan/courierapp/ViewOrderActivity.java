@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.divyagyan.courierapp.databinding.ActivityDashboardBinding;
 
 
-public class DashboardActivity extends DrawerBaseActivity {
+public class ViewOrderActivity extends DrawerBaseActivity {
 
     private TextView textView3;
     ActivityDashboardBinding activityDashboardBinding;
@@ -18,7 +18,7 @@ public class DashboardActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         activityDashboardBinding= ActivityDashboardBinding.inflate(getLayoutInflater());
         setContentView(activityDashboardBinding.getRoot());
-        allocateActivityTitle("Dashboard");
+        allocateActivityTitle("View Orders");
 
 //        String userUid = getIntent().getStringExtra("user_uid");
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);

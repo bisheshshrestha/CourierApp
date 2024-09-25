@@ -1,20 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_orders"
-            android:icon="@drawable/ic_orders"
-            android:title="Orders"/>
-
+        <item
+            android:id="@+id/nav_create_order"
+            android:title="Create Order" />
+        <item
+            android:id="@+id/nav_view_order"
+            android:title="View Order" />
         <item android:id="@+id/nav_customers"
             android:icon="@drawable/ic_customer"
             android:title="Customers"/>
-
         <item android:id="@+id/nav_report"
             android:icon="@drawable/ic_sales"
             android:title="Report"/>
-
         <item android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
             android:title="Profile"/>
+        <item android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout"/>
     </group>
 </menu>

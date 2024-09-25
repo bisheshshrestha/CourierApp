@@ -41,8 +41,14 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.firebase.database
     implementation libs.firebase.auth
+    implementation libs.play.services.maps
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     implementation 'com.airbnb.android:lottie:6.5.2'
+    implementation 'com.google.android.libraries.places:places:2.5.0'
+    implementation 'com.google.android.gms:play-services-places:17.0.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+
 }

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +16,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CourierApp"
         tools:targetApi="31">
+        <activity
+            android:name=".ViewOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LogoutActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCL2N9v3XaFNGY7UPbuBfS0Ekntuv97D9Q" />
+
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
@@ -29,7 +44,7 @@
             android:exported="false" />
         <activity
             android:name=".DashboardActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false" />

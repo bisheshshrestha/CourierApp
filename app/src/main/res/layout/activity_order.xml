@@ -1,10 +1,207 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OrderActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:padding="16dp"
+    android:background="@color/white">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        android:layout_margin="8dp">
+
+        <!-- CardView for Map Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Tracking Number (hidden initially) -->
+                <TextView
+                    android:id="@+id/trackingNumberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tracking Number: "
+                    android:textStyle="bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone" />
+
+                <!-- Map Fragment -->
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_below="@id/trackingNumberTextView"
+                    android:layout_marginBottom="16dp" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Pickup and Delivery Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Pickup Location Label -->
+                <TextView
+                    android:id="@+id/label_pickup_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pickup Location"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Pickup Address Autocomplete Fragment -->
+                <fragment
+                    android:id="@+id/autocomplete_pickup_address"
+                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/label_pickup_address"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Delivery Location Label -->
+                <TextView
+                    android:id="@+id/label_delivery_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delivery Location"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_below="@id/autocomplete_pickup_address"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Delivery Address Autocomplete Fragment -->
+                <fragment
+                    android:id="@+id/autocomplete_delivery_address"
+                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/label_delivery_address"
+                    android:layout_marginBottom="16dp" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Package and Recipient Details Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Package Details -->
+                <EditText
+                    android:id="@+id/edittext_package_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Package Details"
+                    android:background="@drawable/rounded_edittext"
+                    android:padding="10dp"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Recipient Name -->
+                <EditText
+                    android:id="@+id/edittext_recipient_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Recipient Name"
+                    android:background="@drawable/rounded_edittext"
+                    android:padding="10dp"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Recipient Phone Number -->
+                <EditText
+                    android:id="@+id/edittext_recipient_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Recipient Phone Number"
+                    android:inputType="phone"
+                    android:background="@drawable/rounded_edittext"
+                    android:padding="10dp"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="16dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Order Summary Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Order ID (Read-only, initially hidden) -->
+                <TextView
+                    android:id="@+id/label_order_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Order ID: "
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone" />
+
+                <!-- Price (Read-only) -->
+                <TextView
+                    android:id="@+id/label_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Price: Rs 0.00"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Create Order Button -->
+        <Button
+            android:id="@+id/button_create_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Order"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            android:elevation="4dp" />
+    </LinearLayout>
+
+</ScrollView>
