@@ -62,7 +62,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
 
         // Initialize Places API
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), "AIzaSyCL2N9v3XaFNGY7UPbuBfS0Ekntuv97D9Q"); // Replace with your Places API Key
+            Places.initialize(getApplicationContext(), ""); // Replace with your Places API Key
         }
 
 
