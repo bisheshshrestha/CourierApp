@@ -2,13 +2,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_create_order"
-            android:title="Create Order" />
+            android:title="Create Order"
+            android:icon="@drawable/ic_create_order"/>
         <item
             android:id="@+id/nav_view_order"
-            android:title="View Order" />
-        <item android:id="@+id/nav_customers"
-            android:icon="@drawable/ic_customer"
-            android:title="Customers"/>
+            android:title="View Order"
+            android:icon="@drawable/ic_view_order"/>
         <item android:id="@+id/nav_report"
             android:icon="@drawable/ic_sales"
             android:title="Report"/>

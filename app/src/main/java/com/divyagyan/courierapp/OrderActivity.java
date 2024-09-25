@@ -65,6 +65,8 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
             Places.initialize(getApplicationContext(), "AIzaSyCL2N9v3XaFNGY7UPbuBfS0Ekntuv97D9Q"); // Replace with your Places API Key
         }
 
+
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Setup Google Map

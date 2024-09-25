@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Display Order Details -->
+    <TextView
+        android:id="@+id/textView_trackingNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tracking Number: " />
+
+    <TextView
+        android:id="@+id/textView_packageDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Package Details: " />
+
+    <TextView
+        android:id="@+id/textView_recipientName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recipient Name: " />
+
+    <TextView
+        android:id="@+id/textView_recipientPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recipient Phone: " />
+
+    <TextView
+        android:id="@+id/textView_orderPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Price: Rs " />
+
+    <TextView
+        android:id="@+id/textView_orderTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Order Created At: " />
+
+</LinearLayout>

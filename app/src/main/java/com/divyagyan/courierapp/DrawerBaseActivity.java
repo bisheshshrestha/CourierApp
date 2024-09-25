@@ -75,13 +75,12 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         } else if (itemId == R.id.nav_view_order) {
             startActivity(new Intent(this, ViewOrderActivity.class));
             overridePendingTransition(0, 0);
-        } else if (itemId == R.id.nav_customers) {
-            startActivity(new Intent(this, CustomerActivity.class));
-            overridePendingTransition(0, 0);
-        } else if (itemId == R.id.nav_report) {
-            startActivity(new Intent(this, ReportActivity.class));
-            overridePendingTransition(0, 0);
-        } else if (itemId == R.id.nav_profile) {
+        }
+//        } else if (itemId == R.id.nav_report) {
+//            startActivity(new Intent(this, ReportActivity.class));
+//            overridePendingTransition(0, 0);
+        //}
+        else if (itemId == R.id.nav_profile) {
             startActivity(new Intent(this, ProfileActivity.class));
             overridePendingTransition(0, 0);
         } else if (itemId == R.id.nav_logout) {
