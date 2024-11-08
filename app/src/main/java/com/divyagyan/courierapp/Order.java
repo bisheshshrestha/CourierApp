@@ -1,21 +1,24 @@
+package com.divyagyan.courierapp;
+
 public class Order {
     public String trackingNumber;
     public String userUid;
-    public String packageDetails;
     public String recipientName;
     public String recipientPhone;
+    public String packageDetails;
     public double pickupLat;
     public double pickupLng;
     public double deliveryLat;
     public double deliveryLng;
     public double price;
-    public String orderCreationTime;
+
+    public String status;
 
     public Order() {}
 
     public Order(String trackingNumber, String userUid, String packageDetails, String recipientName,
                  String recipientPhone, double pickupLat, double pickupLng,
-                 double deliveryLat, double deliveryLng, double price, String orderCreationTime) {
+                 double deliveryLat, double deliveryLng, double price,String status) {
         this.trackingNumber = trackingNumber;
         this.userUid = userUid;
         this.packageDetails = packageDetails;
@@ -26,6 +29,6 @@ public class Order {
         this.deliveryLat = deliveryLat;
         this.deliveryLng = deliveryLng;
         this.price = price;
-        this.orderCreationTime = orderCreationTime;
+        this.status = status;
     }
 }

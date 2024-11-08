@@ -1,44 +1,212 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".OrderDetailsActivity">
 
-    <!-- Display Order Details -->
-    <TextView
-        android:id="@+id/textView_trackingNumber"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tracking Number: " />
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textView_packageDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Package Details: " />
+        <!-- Map Fragment for showing the pickup and delivery locations -->
+        <fragment
+            android:id="@+id/map_order_details"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="16dp" />
 
-    <TextView
-        android:id="@+id/textView_recipientName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Recipient Name: " />
+        <!-- Order Details Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/textView_recipientPhone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Recipient Phone: " />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textView_orderPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Price: Rs " />
+                <!-- Tracking Number -->
+                <TextView
+                    android:id="@+id/textView_trackingNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tracking Number: 123456"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:drawablePadding="8dp" />
 
-    <TextView
-        android:id="@+id/textView_orderTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Order Created At: " />
+                <!-- Package Details -->
+                <TextView
+                    android:id="@+id/textView_packageDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Package Details: Electronics"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp" />
 
-</LinearLayout>
+                <!-- Recipient Name -->
+                <TextView
+                    android:id="@+id/textView_recipientName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recipient Name: John Doe"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Recipient Phone -->
+                <TextView
+                    android:id="@+id/textView_recipientPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recipient Phone: +977 9876543210"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Order Price -->
+                <TextView
+                    android:id="@+id/textView_orderPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Price: Rs 1000"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Order Status Card -->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="16dp"-->
+<!--            app:cardCornerRadius="8dp"-->
+<!--            app:cardElevation="4dp">-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical"-->
+<!--                android:padding="16dp">-->
+
+<!--                &lt;!&ndash; Order Status Title &ndash;&gt;-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Order Status"-->
+<!--                    android:textSize="18sp"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:layout_marginBottom="8dp"/>-->
+
+<!--                &lt;!&ndash; Order Status Items &ndash;&gt;-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Delivered - Sept. 18, 2024, 3:35 p.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Sent for Delivery - Sept. 18, 2024, 12:30 p.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Arrived at MANIGRAM - Sept. 17, 2024, 12:03 p.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Dispatched to MANIGRAM - Sept. 16, 2024, 10:35 p.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Arrived at TINKUNE - Sept. 16, 2024, 9:51 p.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Dispatched to TINKUNE - Sept. 16, 2024, 4:46 p.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Drop off Order Collected - Sept. 16, 2024, 12:11 p.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="● Drop off Order Created - Sept. 16, 2024, 9:36 a.m."-->
+<!--                    android:layout_marginTop="4dp"/>-->
+<!--            </LinearLayout>-->
+<!--        </androidx.cardview.widget.CardView>-->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Order Status Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Order Status"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- LinearLayout to dynamically add order status history -->
+                <LinearLayout
+                    android:id="@+id/statusHistoryLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Button for Further Actions -->
+        <Button
+            android:id="@+id/editOrderButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit Order"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"
+            android:elevation="4dp" />
+
+
+        <!-- Button for Further Actions -->
+        <Button
+            android:id="@+id/goBackButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Go Back"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"
+            android:elevation="4dp" />
+
+    </LinearLayout>
+</ScrollView>

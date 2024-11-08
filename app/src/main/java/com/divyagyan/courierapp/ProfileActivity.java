@@ -38,7 +38,7 @@ public class ProfileActivity extends DrawerBaseActivity {
             return;
         }
 
-        userDatabaseRef = FirebaseDatabase.getInstance().getReference("Users").child(userUid);
+        userDatabaseRef = FirebaseDatabase.getInstance().getReference("users").child(userUid);
 
 
         loadUserData();

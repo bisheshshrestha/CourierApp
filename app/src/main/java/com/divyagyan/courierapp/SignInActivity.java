@@ -26,7 +26,8 @@ public class SignInActivity extends AppCompatActivity {
     private TextView forgotPasswordTextView, signUpTextView;
     private ProgressBar loginProgressBar;
 
-    FirebaseAuth mAuth;
+    private FirebaseAuth mAuth;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,15 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+
+        // Check if the user is already signed in and login_status is true
+        boolean isLoggedIn = sharedPreferences.getBoolean("login_status", false);
+        if (mAuth.getCurrentUser() != null && isLoggedIn) {
+            // User is signed in and session is active, redirect to DashboardActivity
+            redirectToDashboard();
+            return;
+        }
 
         emailSignInEditText = findViewById(R.id.emailSignInEditText);
         passwordSignInEditText = findViewById(R.id.passwordSignInEditText);
@@ -116,15 +126,14 @@ public class SignInActivity extends AppCompatActivity {
                     if (user != null) {
                         String uid = user.getUid(); // Get the unique user ID (UID)
 
-                        // Save the UID in SharedPreferences
-                        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                        // Save the UID and login_status in SharedPreferences
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("user_uid", uid);
+                        editor.putBoolean("login_status", true); // Set login_status to true
                         editor.apply();
 
                         // Navigate to Dashboard
-                        Intent intent = new Intent(SignInActivity.this, DashboardActivity.class);
-                        startActivity(intent);
+                        redirectToDashboard();
 
                         Toast.makeText(SignInActivity.this, "User Successfully Signed In", Toast.LENGTH_SHORT).show();
                     }
@@ -133,5 +142,12 @@ public class SignInActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // Redirect to DashboardActivity
+    private void redirectToDashboard() {
+        Intent intent = new Intent(SignInActivity.this, DashboardActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

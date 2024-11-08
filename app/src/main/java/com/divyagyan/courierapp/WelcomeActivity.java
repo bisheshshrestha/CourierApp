@@ -23,13 +23,6 @@ public class WelcomeActivity extends AppCompatActivity {
         signupButton = findViewById(R.id.signupButton);
         signinButton = findViewById(R.id.signinButton);
 
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
-
-        myRef.setValue("Hello,world");
-
-
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -93,19 +93,19 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         return true;
     }
 
-    private void performLogout() {
-        // Clear SharedPreferences or any user session data
-        SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.clear(); // Clear all user data
-        editor.apply();
+        private void performLogout() {
+            // Clear SharedPreferences or any user session data
+            SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear(); // Clear all user data
+            editor.apply();
 
-        // Redirect to login activity or main activity
-        Intent intent = new Intent(this, SignInActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear activity stack
-        startActivity(intent);
-        finish(); // Finish current activity
-    }
+            // Redirect to login activity or main activity
+            Intent intent = new Intent(this, SignInActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear activity stack
+            startActivity(intent);
+            finish(); // Finish current activity
+        }
 
 
 

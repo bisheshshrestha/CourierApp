@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "CourierApp"
 include ':app'
+include ':adminapp'
+include ':clientapp'

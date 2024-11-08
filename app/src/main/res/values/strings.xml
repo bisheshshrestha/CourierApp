@@ -2,5 +2,6 @@
     <string name="app_name">CourierApp</string>
     <string name="menu_drawer_open">Drawer Open</string>
     <string name="menu_drawer_close">Drawer Close</string>
+    <string name="api">AIzaSyCL2N9v3XaFNGY7UPbuBfS0Ekntuv97D9Q</string>
 
 </resources>

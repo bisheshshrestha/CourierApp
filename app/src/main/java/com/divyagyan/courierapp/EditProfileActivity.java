@@ -38,7 +38,7 @@ public class EditProfileActivity extends AppCompatActivity {
             return;
         }
 
-        userDatabaseRef = FirebaseDatabase.getInstance().getReference("Users").child(userUid);
+        userDatabaseRef = FirebaseDatabase.getInstance().getReference("users").child(userUid);
 
         loadUserData();
 
@@ -83,6 +83,38 @@ public class EditProfileActivity extends AppCompatActivity {
             return; // Stop execution if validation fails
         }
 
+        // Check if the username is already taken by another user
+        FirebaseDatabase.getInstance().getReference("users")
+                .orderByChild("userName").equalTo(newUsername)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        boolean usernameTaken = false;
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String uid = userSnapshot.getKey();
+                            if (!uid.equals(userUid)) {  // Check if it’s a different user
+                                usernameTaken = true;
+                                break;
+                            }
+                        }
+
+                        if (usernameTaken) {
+                            binding.usernameEditText.setError("Username already taken");
+                            binding.usernameEditText.requestFocus();
+                        } else {
+                            // Username is available; proceed to update profile
+                            updateUserProfile(newUsername, newEmail, newPhone, newAddress);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(EditProfileActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void updateUserProfile(String newUsername, String newEmail, String newPhone, String newAddress) {
         // Update the user profile in the database
         userDatabaseRef.child("userName").setValue(newUsername);
         userDatabaseRef.child("email").setValue(newEmail);

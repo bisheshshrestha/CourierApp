@@ -3,7 +3,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
-    android:padding="16dp"
     android:background="@color/white">
 
     <LinearLayout
@@ -25,8 +24,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:layout_height="wrap_content">
 
                 <!-- Tracking Number (hidden initially) -->
                 <TextView
@@ -186,8 +184,21 @@
                     android:text="Price: Rs 0.00"
                     android:textSize="16sp"
                     android:layout_marginBottom="8dp" />
+
+
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+        <!-- Note TextView -->
+        <TextView
+            android:id="@+id/note_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Note: Only small package can be delivered."
+            android:textSize="14sp"
+            android:textColor="@android:color/holo_red_dark"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="8dp" />
 
         <!-- Create Order Button -->
         <Button

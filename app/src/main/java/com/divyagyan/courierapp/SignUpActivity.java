@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,10 +17,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignUpActivity extends AppCompatActivity {
+
     private EditText usernameEditText, passwordEditText, phoneEditText, emailEditText, addressEditText;
+    private TextView usernameErrorTextView, emailErrorTextView; // Error TextViews
     private Button registerButton;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
@@ -34,6 +40,8 @@ public class SignUpActivity extends AppCompatActivity {
         phoneEditText = findViewById(R.id.phoneEditText);
         emailEditText = findViewById(R.id.emailEditText);
         addressEditText = findViewById(R.id.addressEditText);
+        usernameErrorTextView = findViewById(R.id.usernameErrorTextView); // Initialize error TextView
+        emailErrorTextView = findViewById(R.id.emailErrorTextView); // Initialize error TextView
         registerButton = findViewById(R.id.registerButton);
         progressBar = findViewById(R.id.progressBar);
 
@@ -42,6 +50,10 @@ public class SignUpActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Clear previous error messages
+                usernameErrorTextView.setVisibility(View.GONE);
+                emailErrorTextView.setVisibility(View.GONE);
+
                 String txtUserName = usernameEditText.getText().toString().trim();
                 String txtPassword = passwordEditText.getText().toString().trim();
                 String txtPhone = phoneEditText.getText().toString().trim();
@@ -50,45 +62,88 @@ public class SignUpActivity extends AppCompatActivity {
 
                 if (validateInput(txtUserName, txtPassword, txtEmail, txtPhone, txtAddress)) {
                     progressBar.setVisibility(View.VISIBLE);
-
-                    mAuth.createUserWithEmailAndPassword(txtEmail, txtPassword)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        User user = new User(txtUserName, txtPassword, txtEmail, txtPhone, txtAddress);
-                                        FirebaseDatabase.getInstance().getReference("Users")
-                                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                                .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if (task.isSuccessful()) {
-                                                            Toast.makeText(SignUpActivity.this, "User Registered Successfully", Toast.LENGTH_LONG).show();
-                                                            progressBar.setVisibility(View.GONE);
-                                                            startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
-                                                        } else {
-                                                            Toast.makeText(SignUpActivity.this, "User Failed to Register", Toast.LENGTH_LONG).show();
-                                                            progressBar.setVisibility(View.GONE);
-                                                        }
-                                                    }
-                                                });
-
-                                    } else {
-                                        Toast.makeText(SignUpActivity.this, "User Failed to Register: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                        progressBar.setVisibility(View.GONE);
-                                    }
-                                }
-                            });
+                    checkIfUserExists(txtUserName, txtEmail, txtPassword, txtPhone, txtAddress);
                 }
             }
         });
     }
 
-    // Method to validate input fields
+    private void checkIfUserExists(String username, String email, String password, String phone, String address) {
+        FirebaseDatabase.getInstance().getReference("users")
+                .orderByChild("userName").equalTo(username)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            progressBar.setVisibility(View.GONE);
+                            showError(usernameErrorTextView, "Username already taken");
+                        } else {
+                            checkIfEmailExists(username, email, password, phone, address);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(SignUpActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void checkIfEmailExists(String username, String email, String password, String phone, String address) {
+        FirebaseDatabase.getInstance().getReference("users")
+                .orderByChild("email").equalTo(email)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            progressBar.setVisibility(View.GONE);
+                            showError(emailErrorTextView, "Email already registered");
+                        } else {
+                            registerUser(username, password, email, phone, address);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(SignUpActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void registerUser(String username, String password, String email, String phone, String address) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            User user = new User(username, password, email, phone, address);
+                            FirebaseDatabase.getInstance().getReference("users")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            progressBar.setVisibility(View.GONE);
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(SignUpActivity.this, "User Registered Successfully", Toast.LENGTH_LONG).show();
+                                                startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                                            } else {
+                                                Toast.makeText(SignUpActivity.this, "User Failed to Register", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(SignUpActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
     private boolean validateInput(String userName, String password, String email, String phone, String address) {
         if (userName.isEmpty()) {
-            usernameEditText.setError("Please enter a username");
-            usernameEditText.requestFocus();
+            showError(usernameErrorTextView, "Please enter a username");
             return false;
         }
 
@@ -99,8 +154,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailEditText.setError("Please enter a valid email");
-            emailEditText.requestFocus();
+            showError(emailErrorTextView, "Please enter a valid email");
             return false;
         }
 
@@ -117,5 +171,10 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         return true; // All validations passed
+    }
+
+    private void showError(TextView errorTextView, String message) {
+        errorTextView.setText(message);
+        errorTextView.setVisibility(View.VISIBLE);
     }
 }

@@ -85,13 +85,6 @@
                             android:textColor="#6f6f6f"
                             android:textSize="20dp"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:hint="15"
-                            android:textColor="#6f6f6f"
-                            android:textSize="20dp"/>
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -123,13 +116,6 @@
                             android:textColor="#6f6f6f"
                             android:textSize="20dp"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:hint="15"
-                            android:textColor="#6f6f6f"
-                            android:textSize="20dp"/>
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>

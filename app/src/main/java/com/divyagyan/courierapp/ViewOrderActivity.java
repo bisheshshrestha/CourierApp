@@ -57,18 +57,37 @@ public class ViewOrderActivity extends DrawerBaseActivity {
         listViewOrders.setOnItemClickListener((parent, view, position, id) -> {
             Map<String, Object> selectedOrder = orderDataList.get(position);
 
-            // Start OrderDetailsActivity and pass order details to it
-            Intent intent = new Intent(ViewOrderActivity.this, OrderDetailsActivity.class);
-            intent.putExtra("trackingNumber", selectedOrder.get("trackingNumber").toString());
-            intent.putExtra("packageDetails", selectedOrder.get("packageDetails").toString());
-            intent.putExtra("recipientName", selectedOrder.get("recipientName").toString());
-            intent.putExtra("recipientPhone", selectedOrder.get("recipientPhone").toString());
-            intent.putExtra("price", selectedOrder.get("price").toString());
-            intent.putExtra("orderCreationTime", selectedOrder.get("orderCreationTime").toString());
-            startActivity(intent);
+            // Retrieve the orderId from the selectedOrder map
+            String orderId = safeGetString(selectedOrder, "orderId");
+
+            if (orderId != null) {
+                // Start OrderDetailsActivity and pass order details to it
+                Intent intent = new Intent(ViewOrderActivity.this, OrderDetailsActivity.class);
+                intent.putExtra("orderId", orderId);  // Correctly pass the orderId
+                intent.putExtra("trackingNumber", safeGetString(selectedOrder, "trackingNumber"));
+                intent.putExtra("packageDetails", safeGetString(selectedOrder, "packageDetails"));
+                intent.putExtra("recipientName", safeGetString(selectedOrder, "recipientName"));
+                intent.putExtra("recipientPhone", safeGetString(selectedOrder, "recipientPhone"));
+                intent.putExtra("price", safeGetString(selectedOrder, "price"));
+                intent.putExtra("orderCreationTime", safeGetString(selectedOrder, "orderCreationTime"));
+
+                // Safely retrieve pickup and delivery locations
+                Map<String, Object> pickupLocation = (Map<String, Object>) selectedOrder.get("pickupLocation");
+                Map<String, Object> deliveryLocation = (Map<String, Object>) selectedOrder.get("deliveryLocation");
+
+                intent.putExtra("pickupLat", pickupLocation != null ? safeGetString(pickupLocation, "latitude") : "0");
+                intent.putExtra("pickupLng", pickupLocation != null ? safeGetString(pickupLocation, "longitude") : "0");
+                intent.putExtra("deliveryLat", deliveryLocation != null ? safeGetString(deliveryLocation, "latitude") : "0");
+                intent.putExtra("deliveryLng", deliveryLocation != null ? safeGetString(deliveryLocation, "longitude") : "0");
+
+                startActivity(intent);
+            } else {
+                Toast.makeText(ViewOrderActivity.this, "Order ID not found.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
+    // Method to fetch orders from Firebase
     // Method to fetch orders from Firebase
     private void fetchOrders(String userUid) {
         FirebaseDatabase.getInstance().getReference("orders")
@@ -77,20 +96,41 @@ public class ViewOrderActivity extends DrawerBaseActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        orderDataList.clear(); // Clear list before adding new data
+                        orderList.clear(); // Clear the displayed list as well
+
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Map<String, Object> orderData = (Map<String, Object>) snapshot.getValue();
-                            orderDataList.add(orderData);
+                            if (orderData != null) {
+                                orderData.put("orderId", snapshot.getKey()); // Store orderId in orderData map
+                                orderDataList.add(orderData); // Add to list
 
-                            String orderId = snapshot.getKey();
-                            String price = orderData.get("price").toString();
+                                // Extract order details
+                                String recipientName = safeGetString(orderData, "recipientName");
+                                String recipientPhone = safeGetString(orderData, "recipientPhone");
+                                String price = safeGetString(orderData, "price");
+                                String status = safeGetString(orderData, "status");
+                                if ("N/A".equals(status)) {
+                                    status = "Order Created";
+                                }
 
-                            // Add order summary to orderList
-                            orderList.add("Order ID: " + orderId + "\nPrice: Rs " + price);
+                                // Format the order summary string
+                                String orderDetails = String.format(
+                                        "Name: %s\nPhone: %s\nPrice: Rs %s\nStatus: %s",
+                                        recipientName, recipientPhone, price, status
+                                );
+
+                                orderList.add(orderDetails);
+                            }
                         }
 
-                        // Display orders in ListView
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewOrderActivity.this, android.R.layout.simple_list_item_1, orderList);
-                        listViewOrders.setAdapter(adapter);
+                        if (orderList.isEmpty()) {
+                            Toast.makeText(ViewOrderActivity.this, "No orders found", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Display orders in ListView
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewOrderActivity.this, android.R.layout.simple_list_item_1, orderList);
+                            listViewOrders.setAdapter(adapter);
+                        }
                     }
 
                     @Override
@@ -98,5 +138,11 @@ public class ViewOrderActivity extends DrawerBaseActivity {
                         Toast.makeText(ViewOrderActivity.this, "Failed to fetch orders", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+
+    // Helper method to safely retrieve string from map
+    private String safeGetString(Map<String, Object> map, String key) {
+        return map != null && map.containsKey(key) && map.get(key) != null ? map.get(key).toString() : "N/A";
     }
 }

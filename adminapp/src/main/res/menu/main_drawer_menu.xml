@@ -1,0 +1,38 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_dashboard"
+            android:title="Dashboard"
+            android:icon="@drawable/logo"/>
+        <item
+            android:id="@+id/nav_manage_profile"
+            android:title="Manage Profile"
+            android:icon="@drawable/ic_create_order"/>
+        <item
+            android:id="@+id/nav_view_pending"
+            android:title="View Pending Order"
+            android:icon="@drawable/ic_view_order"/>
+
+        <item
+            android:id="@+id/nav_view_pickup"
+            android:title="View Pickup Order"
+            android:icon="@drawable/ic_view_order"/>
+        <item
+            android:id="@+id/nav_view_sent"
+            android:title="View Sent Order"
+            android:icon="@drawable/ic_view_order"/>
+        <item
+            android:id="@+id/nav_view_delivered"
+            android:title="View Delivered Order"
+            android:icon="@drawable/ic_view_order"/>
+
+        <item android:id="@+id/nav_payment"
+            android:icon="@drawable/ic_profile"
+            android:title="Manage Payment"/>
+
+        <item android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout"/>
+    </group>
+</menu>
