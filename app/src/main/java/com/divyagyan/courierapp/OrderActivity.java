@@ -101,7 +101,11 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
             }
 
             if (pickupLocation != null && deliveryLocation != null) {
-                double price = calculateDeliveryPrice(pickupLocation, deliveryLocation);
+                double distance = calculateDistance(pickupLocation, deliveryLocation);
+                double price = calculateDeliveryPrice(distance);
+
+                // Update the UI with the calculated distance and price
+                activityOrderBinding.distanceText.setText(String.format("Distance: %.2f km", distance));
                 activityOrderBinding.labelPrice.setText(String.format("Price: Rs %.2f", price));
 
                 // Generate a unique order ID
@@ -111,7 +115,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
                 String orderCreationTime = getCurrentDateTime();
 
                 // Save the order to Firebase
-                saveOrderToFirebase(orderId, pickupLocation, deliveryLocation, price, packageDetails, recipientName, recipientPhone, orderCreationTime, trackingNumber);
+                saveOrderToFirebase(orderId, pickupLocation, deliveryLocation, price, distance,packageDetails, recipientName, recipientPhone, orderCreationTime, trackingNumber);
             } else {
                 Toast.makeText(OrderActivity.this, "Please select both Pickup and Delivery locations", Toast.LENGTH_SHORT).show();
             }
@@ -186,7 +190,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
     }
 
     // Firebase Methods
-    private void saveOrderToFirebase(String orderId, LatLng pickupLocation, LatLng deliveryLocation, double price, String packageDetails, String recipientName, String recipientPhone, String orderCreationTime, String trackingNumber) {
+    private void saveOrderToFirebase(String orderId, LatLng pickupLocation, LatLng deliveryLocation, double price,double distance, String packageDetails, String recipientName, String recipientPhone, String orderCreationTime, String trackingNumber) {
         DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders").child(orderId);
 
         // Create order data map
@@ -199,33 +203,44 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
         orderData.put("pickupLocation", pickupLocation);
         orderData.put("deliveryLocation", deliveryLocation);
         orderData.put("price", String.format("%.2f", price));
-        orderData.put("status", "Order Created"); // Add initial status
+        orderData.put("distance",String.format("%.2f", distance));
+        orderData.put("status", "Order Created");
 
-        // Add initial status to statusHistory
-        Map<String, Object> statusHistoryEntry = new HashMap<>();
-        statusHistoryEntry.put("status", "Order Created");
-        statusHistoryEntry.put("timestamp", orderCreationTime);
-
-        DatabaseReference statusHistoryRef = ordersRef.child("statusHistory").push();
-        statusHistoryRef.setValue(statusHistoryEntry);
-
-        // Save the order data to Firebase
-        ordersRef.setValue(orderData).addOnCompleteListener(task -> {
+        // Save the order data without overwriting existing nodes
+        ordersRef.updateChildren(orderData).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Toast.makeText(OrderActivity.this, "Order Created Successfully", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(OrderActivity.this, ViewOrderActivity.class);
-                startActivity(intent);
+                // Add initial status to statusHistory
+                Map<String, Object> statusHistoryEntry = new HashMap<>();
+                statusHistoryEntry.put("status", "Order Created");
+                statusHistoryEntry.put("timestamp", orderCreationTime);
+
+                DatabaseReference statusHistoryRef = ordersRef.child("statusHistory").push();
+                statusHistoryRef.setValue(statusHistoryEntry).addOnCompleteListener(statusTask -> {
+                    if (statusTask.isSuccessful()) {
+                        Toast.makeText(OrderActivity.this, "Order Created Successfully", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(OrderActivity.this, ViewOrderActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(OrderActivity.this, "Failed to save status history", Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 Toast.makeText(OrderActivity.this, "Failed to create order", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+
     // Google Map Setup
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(27.717245, 85.323959), 12));
+
+        // Enable zoom controls
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setZoomGesturesEnabled(true);
+
         getLocationPermission();
 
         // Set a map click listener
@@ -246,7 +261,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
                 pickupLocation = latLng;
                 mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Location")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                deliveryLocation = null; // Reset delivery location
+                deliveryLocation = null;
             }
 
             // Redraw the line and recalculate price if both locations are set
@@ -255,6 +270,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
             }
         });
     }
+
 
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -279,26 +295,34 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
     // Line and Price Calculation
     private void drawLineAndCalculatePrice() {
         if (pickupLocation != null && deliveryLocation != null) {
-            mMap.addPolyline(new PolylineOptions()
-                    .add(pickupLocation, deliveryLocation)
-                    .width(5)
+            mMap.addPolyline(new PolylineOptions().add(pickupLocation, deliveryLocation).width(5)
                     .color(ContextCompat.getColor(this, R.color.pure_courier_text)));
 
-            double price = calculateDeliveryPrice(pickupLocation, deliveryLocation);
+            double distance = calculateDistance(pickupLocation, deliveryLocation);
+            double price = calculateDeliveryPrice(distance);
+
+            activityOrderBinding.distanceText.setText(String.format("Distance: %.2f km", distance));
             activityOrderBinding.labelPrice.setText(String.format("Price: Rs %.2f", price));
         }
     }
 
-    private double calculateDeliveryPrice(LatLng pickup, LatLng delivery) {
-        double earthRadius = 6371; // Radius of the Earth in kilometers
+    private double calculateDistance(LatLng pickup, LatLng delivery) {
+        double earthRadius = 6371.0;
         double latDiff = Math.toRadians(delivery.latitude - pickup.latitude);
         double lonDiff = Math.toRadians(delivery.longitude - pickup.longitude);
-        double a = Math.sin(latDiff / 2) * Math.sin(latDiff / 2)
-                + Math.cos(Math.toRadians(pickup.latitude)) * Math.cos(Math.toRadians(delivery.latitude))
-                * Math.sin(lonDiff / 2) * Math.sin(lonDiff / 2);
+        double a = Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
+                Math.cos(Math.toRadians(pickup.latitude)) * Math.cos(Math.toRadians(delivery.latitude)) *
+                        Math.sin(lonDiff / 2) * Math.sin(lonDiff / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = earthRadius * c;
-        return distance * 80; // Pricing logic based on distance
+        return earthRadius * c;
+    }
+
+    private double calculateDeliveryPrice(double distance) {
+        double baseFare = 50;
+        double costPerKm = 20;
+        double minimumFare = 100;
+        double totalPrice = baseFare + (costPerKm * distance);
+        return Math.max(totalPrice, minimumFare);
     }
 
     // Generate a unique tracking number
@@ -311,4 +335,21 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy h:mm a");
         return sdf.format(new Date());
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Properly shutdown the Places API to avoid memory leaks
+        try {
+            if (Places.isInitialized()) {
+                com.google.android.libraries.places.api.Places.deinitialize();
+                Log.d("OrderActivity", "Places API deinitialized successfully.");
+            }
+        } catch (Exception e) {
+            Log.e("OrderActivity", "Failed to deinitialize Places API", e);
+        }
+    }
+
+
 }

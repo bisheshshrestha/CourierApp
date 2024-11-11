@@ -93,12 +93,14 @@ public class PickupOrderActivity extends DrawerBaseActivity {
                                     String recipientName = safeGetString(orderData, "recipientName");
                                     String recipientPhone = safeGetString(orderData, "recipientPhone");
                                     String price = safeGetString(orderData, "price");
+                                    String distance = safeGetString(orderData, "distance");
 
                                     // Format the order details
                                     String orderDetails = count + ". " +
                                             "Name: " + recipientName + "\n" +
                                             "Phone: " + recipientPhone + "\n" +
                                             "Price: Rs " + price + "\n" +
+                                            "Distance: " + distance + " km" + "\n"+
                                             "Status: " + status;
 
                                     pickupOrderList.add(orderDetails);

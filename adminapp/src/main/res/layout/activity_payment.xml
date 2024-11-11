@@ -81,7 +81,7 @@
                     android:id="@+id/labelCompletedDeliveryCharges"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Completed Delivery Charges"
+                    android:text="Completed Payments"
                     android:textSize="18sp"
                     android:textColor="#34495E"
                     android:fontFamily="sans-serif-medium"

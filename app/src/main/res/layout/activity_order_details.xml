@@ -77,9 +77,17 @@
                     android:id="@+id/textView_orderPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Price: Rs 1000"
-                    android:textSize="14sp"
-                    android:layout_marginTop="8dp" />
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/textView_orderDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Distance:5.KM"
+                    android:textSize="14sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

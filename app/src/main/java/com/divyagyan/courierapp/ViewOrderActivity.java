@@ -69,6 +69,7 @@ public class ViewOrderActivity extends DrawerBaseActivity {
                 intent.putExtra("recipientName", safeGetString(selectedOrder, "recipientName"));
                 intent.putExtra("recipientPhone", safeGetString(selectedOrder, "recipientPhone"));
                 intent.putExtra("price", safeGetString(selectedOrder, "price"));
+                intent.putExtra("distance", safeGetString(selectedOrder, "distance"));
                 intent.putExtra("orderCreationTime", safeGetString(selectedOrder, "orderCreationTime"));
 
                 // Safely retrieve pickup and delivery locations
@@ -109,16 +110,18 @@ public class ViewOrderActivity extends DrawerBaseActivity {
                                 String recipientName = safeGetString(orderData, "recipientName");
                                 String recipientPhone = safeGetString(orderData, "recipientPhone");
                                 String price = safeGetString(orderData, "price");
+                                String distance = safeGetString(orderData, "distance");
+
                                 String status = safeGetString(orderData, "status");
                                 if ("N/A".equals(status)) {
                                     status = "Order Created";
                                 }
-
-                                // Format the order summary string
+                                    // Format the order summary string
                                 String orderDetails = String.format(
-                                        "Name: %s\nPhone: %s\nPrice: Rs %s\nStatus: %s",
-                                        recipientName, recipientPhone, price, status
+                                        "Name: %s\nPhone: %s\nPrice: Rs %s\nDistance: %s km\nStatus: %s",
+                                        recipientName, recipientPhone, price, distance, status
                                 );
+
 
                                 orderList.add(orderDetails);
                             }

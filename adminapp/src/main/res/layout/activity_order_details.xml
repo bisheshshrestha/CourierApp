@@ -1,7 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
     android:background="@color/white">
 
@@ -9,26 +9,80 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp"
-        android:background="@android:color/white">
+        android:padding="16dp"
+        android:background="@color/white">
 
-        <!-- Map Section -->
+        <!-- Map Section with Distance Display -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <fragment
                     android:id="@+id/map_order_details"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
+                    android:layout_height="500dp" />
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Pickup and Delivery Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Pickup Location Label -->
+                <TextView
+                    android:id="@+id/label_pickup_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pickup Location"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <!-- Pickup Address Autocomplete Fragment -->
+                <fragment
+                    android:id="@+id/autocomplete_pickup_address"
+                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/label_pickup_address"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Delivery Location Label -->
+                <TextView
+                    android:id="@+id/label_delivery_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delivery Location"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_below="@id/autocomplete_pickup_address" />
+
+                <!-- Delivery Address Autocomplete Fragment -->
+                <fragment
+                    android:id="@+id/autocomplete_delivery_address"
+                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/label_delivery_address"
                     android:layout_marginBottom="16dp" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
@@ -38,8 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,8 +105,8 @@
                     android:id="@+id/editTextPackageDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter Package Details"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:hint="Enter Package Details" />
 
                 <EditText
                     android:id="@+id/editTextRecipientName"
@@ -68,23 +122,15 @@
                     android:hint="Enter Recipient Phone"
                     android:inputType="phone"
                     android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/label_price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Price: Rs 0.00"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="8dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Order Status Section -->
+        <!-- Order Summary Section -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="12dp"
             app:cardElevation="4dp">
 
             <LinearLayout
@@ -96,43 +142,79 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Order Status"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:text="Delivery Price"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/label_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Rs. 0.00"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/distanceText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Distance: 0 km"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Order Status Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/buttonPickupComplete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Pickup Complete"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:backgroundTint="@color/pure_courier_text"
+                    android:textColor="@android:color/white" />
 
                 <Button
                     android:id="@+id/buttonSentForDelivery"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Sent For Delivery"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:backgroundTint="@color/pure_courier_text"
+                    android:textColor="@android:color/white" />
 
                 <Button
                     android:id="@+id/buttonDelivered"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Delivered"
-                    android:layout_marginBottom="8dp" />
+                    android:backgroundTint="@color/pure_courier_text"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Action Buttons -->
+        <!-- Update Button -->
         <Button
             android:id="@+id/updateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Update Order"
             android:textColor="@android:color/white"
+            android:backgroundTint="@color/pure_courier_text"
             android:layout_marginTop="16dp"
             android:elevation="4dp" />
-
     </LinearLayout>
 </ScrollView>

@@ -60,6 +60,7 @@ public class OrderActivity extends DrawerBaseActivity {
             intent.putExtra("recipientName", safeGetString(selectedOrder, "recipientName"));
             intent.putExtra("recipientPhone", safeGetString(selectedOrder, "recipientPhone"));
             intent.putExtra("price", safeGetString(selectedOrder, "price"));
+            intent.putExtra("distance", safeGetString(selectedOrder, "distance"));
 
             Map<String, Object> pickupLocation = (Map<String, Object>) selectedOrder.get("pickupLocation");
             Map<String, Object> deliveryLocation = (Map<String, Object>) selectedOrder.get("deliveryLocation");
@@ -92,6 +93,7 @@ public class OrderActivity extends DrawerBaseActivity {
                                 String recipientPhone = safeGetString(orderData, "recipientPhone");
                                 String status = safeGetString(orderData, "status");
                                 String price;
+                                String distance = safeGetString(orderData, "distance");
 
                                 if ("N/A".equals(status)) {
                                     status = "Order Created";
@@ -105,8 +107,8 @@ public class OrderActivity extends DrawerBaseActivity {
 
                                 // Create a formatted string for the ListView item
                                 String orderDetails = String.format(
-                                        "Order #%d\nName: %s\nPhone: %s\nPrice: Rs %s\nStatus: %s",
-                                        count, recipientName, recipientPhone, price, status
+                                        "Name: %s\nPhone: %s\nPrice: Rs %s\nDistance: %s km\nStatus: %s",
+                                        recipientName, recipientPhone, price, distance, status
                                 );
 
                                 orderList.add(orderDetails);

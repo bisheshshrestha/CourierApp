@@ -1,5 +1,6 @@
 package com.divyagyan.adminapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Load income data from Firebase
         loadIncomeData();
+        setupClickListeners();
     }
 
     private void loadIncomeData() {
@@ -67,7 +69,7 @@ public class PaymentActivity extends AppCompatActivity {
                                     completedDeliveryCharges += price; // Only add charges for delivered orders
                                     totalIncome += price;
                                     completedOrders++;
-                                } else if ("Pending".equals(status)) {
+                                } else if ("Sent For Delivery".equals(status)) {
                                     pendingPayments += price;
                                 }
                             }
@@ -85,5 +87,27 @@ public class PaymentActivity extends AppCompatActivity {
                         Toast.makeText(PaymentActivity.this, "Failed to load data", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+
+    // Method to set click listeners for the TextViews
+    private void setupClickListeners() {
+        // Open SentOrderActivity when clicking on pending payments
+        pendingPaymentsTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(PaymentActivity.this, SentOrderActivity.class);
+            startActivity(intent);
+        });
+
+        // Open DeliveredOrderActivity when clicking on completed delivery charges
+        completedDeliveryChargesTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(PaymentActivity.this, DeliveredOrderActivity.class);
+            startActivity(intent);
+        });
+
+        // Open DeliveredOrderActivity when clicking on completed orders
+        completedOrdersTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(PaymentActivity.this, DeliveredOrderActivity.class);
+            startActivity(intent);
+        });
     }
 }

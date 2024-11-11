@@ -33,7 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapReadyCallback {
 
     private ActivityOrderDetailsBinding activityOrderDetailsBinding;
-    private TextView textViewTrackingNumber, textViewPackageDetails, textViewRecipientName, textViewRecipientPhone, textViewPrice;
+    private TextView textViewTrackingNumber, textViewPackageDetails, textViewRecipientName, textViewRecipientPhone, textViewPrice,textViewDistance;
     private LinearLayout statusHistoryLayout;
     private GoogleMap mMap;
     private LatLng pickupLocation;
@@ -52,6 +52,7 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
         textViewRecipientName = findViewById(R.id.textView_recipientName);
         textViewRecipientPhone = findViewById(R.id.textView_recipientPhone);
         textViewPrice = findViewById(R.id.textView_orderPrice);
+        textViewDistance = findViewById(R.id.textView_orderDistance);
         statusHistoryLayout = findViewById(R.id.statusHistoryLayout);
         goBackButton = findViewById(R.id.goBackButton);
         editOrderButton = findViewById(R.id.editOrderButton);
@@ -63,6 +64,7 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
         String recipientName = intent.getStringExtra("recipientName");
         String recipientPhone = intent.getStringExtra("recipientPhone");
         String price = intent.getStringExtra("price");
+        String distance = intent.getStringExtra("distance");
         double pickupLat = Double.parseDouble(intent.getStringExtra("pickupLat"));
         double pickupLng = Double.parseDouble(intent.getStringExtra("pickupLng"));
         double deliveryLat = Double.parseDouble(intent.getStringExtra("deliveryLat"));
@@ -73,6 +75,7 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
         textViewRecipientName.setText("Recipient Name: " + recipientName);
         textViewRecipientPhone.setText("Recipient Phone: " + recipientPhone);
         textViewPrice.setText("Price: Rs " + price);
+        textViewDistance.setText("Distance: " + distance+ " km");
 
         pickupLocation = new LatLng(pickupLat, pickupLng);
         deliveryLocation = new LatLng(deliveryLat, deliveryLng);
@@ -97,6 +100,7 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
             intentEditOrder.putExtra("recipientName", recipientName);
             intentEditOrder.putExtra("recipientPhone", recipientPhone);
             intentEditOrder.putExtra("price", price);
+            intentEditOrder.putExtra("distance", distance);
             intentEditOrder.putExtra("pickupLat", String.valueOf(pickupLocation.latitude));
             intentEditOrder.putExtra("pickupLng", String.valueOf(pickupLocation.longitude));
             intentEditOrder.putExtra("deliveryLat", String.valueOf(deliveryLocation.latitude));
