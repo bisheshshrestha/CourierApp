@@ -91,79 +91,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Order Status Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            app:cardCornerRadius="8dp"-->
-<!--            app:cardElevation="4dp">-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:padding="16dp">-->
-
-<!--                &lt;!&ndash; Order Status Title &ndash;&gt;-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Order Status"-->
-<!--                    android:textSize="18sp"-->
-<!--                    android:textStyle="bold"-->
-<!--                    android:layout_marginBottom="8dp"/>-->
-
-<!--                &lt;!&ndash; Order Status Items &ndash;&gt;-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Delivered - Sept. 18, 2024, 3:35 p.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Sent for Delivery - Sept. 18, 2024, 12:30 p.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Arrived at MANIGRAM - Sept. 17, 2024, 12:03 p.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Dispatched to MANIGRAM - Sept. 16, 2024, 10:35 p.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Arrived at TINKUNE - Sept. 16, 2024, 9:51 p.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Dispatched to TINKUNE - Sept. 16, 2024, 4:46 p.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Drop off Order Collected - Sept. 16, 2024, 12:11 p.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="● Drop off Order Created - Sept. 16, 2024, 9:36 a.m."-->
-<!--                    android:layout_marginTop="4dp"/>-->
-<!--            </LinearLayout>-->
-<!--        </androidx.cardview.widget.CardView>-->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -202,6 +129,17 @@
             android:layout_height="wrap_content"
             android:text="Edit Order"
             android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"
+            android:elevation="4dp" />
+
+        <!-- Button for Canceling the Order -->
+        <Button
+            android:id="@+id/cancelOrderButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel Order"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/holo_red_light"
             android:layout_marginTop="16dp"
             android:elevation="4dp" />
 

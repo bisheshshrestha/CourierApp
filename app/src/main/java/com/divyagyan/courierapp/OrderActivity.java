@@ -1,6 +1,7 @@
 package com.divyagyan.courierapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -332,6 +333,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
 
     // Get Current Date and Time
     private String getCurrentDateTime() {
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy h:mm a");
         return sdf.format(new Date());
     }

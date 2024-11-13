@@ -61,21 +61,35 @@ public class SignInActivity extends Activity {
                     progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(SignInActivity.this, "Login Successfull", Toast.LENGTH_SHORT).show();
 
-                        // Save "Stay signed in" preference
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putBoolean("staySignedIn", staySignedInCheckBox.isChecked());
-                        editor.apply();
+                        if (user != null) {
+                            String userEmail = user.getEmail();
 
-                        Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                            // Check if the signed-in email is "admin@gmail.com"
+                            if (userEmail != null && userEmail.equals("admin@gmail.com")) {
+                                Toast.makeText(SignInActivity.this, "Admin Login Successful", Toast.LENGTH_SHORT).show();
+
+                                // Save "Stay signed in" preference
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putBoolean("staySignedIn", staySignedInCheckBox.isChecked());
+                                editor.apply();
+
+                                // Redirect to MainActivity
+                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                // Sign out the user if the email is not "admin@gmail.com"
+                                mAuth.signOut();
+                                Toast.makeText(SignInActivity.this, "Access Denied: Only admin can log in", Toast.LENGTH_LONG).show();
+                            }
+                        }
                     } else {
                         Toast.makeText(SignInActivity.this, "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
     @Override
     protected void onStart() {

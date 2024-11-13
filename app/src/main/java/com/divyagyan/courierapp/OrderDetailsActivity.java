@@ -1,5 +1,6 @@
 package com.divyagyan.courierapp;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -30,15 +31,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapReadyCallback {
 
     private ActivityOrderDetailsBinding activityOrderDetailsBinding;
-    private TextView textViewTrackingNumber, textViewPackageDetails, textViewRecipientName, textViewRecipientPhone, textViewPrice,textViewDistance;
+    private TextView textViewTrackingNumber, textViewPackageDetails, textViewRecipientName, textViewRecipientPhone, textViewPrice, textViewDistance;
     private LinearLayout statusHistoryLayout;
     private GoogleMap mMap;
     private LatLng pickupLocation;
     private LatLng deliveryLocation;
-    private Button goBackButton, editOrderButton;
+    private Button goBackButton, editOrderButton, cancelOrderButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,7 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
         statusHistoryLayout = findViewById(R.id.statusHistoryLayout);
         goBackButton = findViewById(R.id.goBackButton);
         editOrderButton = findViewById(R.id.editOrderButton);
+        cancelOrderButton = findViewById(R.id.cancelOrderButton);
 
         Intent intent = getIntent();
         String orderId = intent.getStringExtra("orderId");
@@ -75,7 +83,7 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
         textViewRecipientName.setText("Recipient Name: " + recipientName);
         textViewRecipientPhone.setText("Recipient Phone: " + recipientPhone);
         textViewPrice.setText("Price: Rs " + price);
-        textViewDistance.setText("Distance: " + distance+ " km");
+        textViewDistance.setText("Distance: " + distance + " km");
 
         pickupLocation = new LatLng(pickupLat, pickupLng);
         deliveryLocation = new LatLng(deliveryLat, deliveryLng);
@@ -95,28 +103,38 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
         editOrderButton.setOnClickListener(v -> {
             Intent intentEditOrder = new Intent(OrderDetailsActivity.this, EditOrderActivity.class);
             intentEditOrder.putExtra("orderId", orderId);
-            intentEditOrder.putExtra("trackingNumber", trackingNumber);
-            intentEditOrder.putExtra("packageDetails", packageDetails);
-            intentEditOrder.putExtra("recipientName", recipientName);
-            intentEditOrder.putExtra("recipientPhone", recipientPhone);
-            intentEditOrder.putExtra("price", price);
-            intentEditOrder.putExtra("distance", distance);
-            intentEditOrder.putExtra("pickupLat", String.valueOf(pickupLocation.latitude));
-            intentEditOrder.putExtra("pickupLng", String.valueOf(pickupLocation.longitude));
-            intentEditOrder.putExtra("deliveryLat", String.valueOf(deliveryLocation.latitude));
-            intentEditOrder.putExtra("deliveryLng", String.valueOf(deliveryLocation.longitude));
             startActivity(intentEditOrder);
             finish();
         });
 
+        cancelOrderButton.setOnClickListener(v -> {
+            showCancelOrderDialog(orderId);
+        });
         goBackButton.setOnClickListener(v -> {
             Intent intent1 = new Intent(OrderDetailsActivity.this, ViewOrderActivity.class);
             startActivity(intent1);
             finish();
         });
 
-        // Load status history and handle "Delivered" status
         loadOrderStatusHistory(orderId);
+    }
+
+    private void showCancelOrderDialog(String orderId) {
+        // Create an AlertDialog
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Cancel Order")
+                .setMessage("Are you sure you want to cancel this order?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // If the user confirms, proceed to cancel the order
+                    cancelOrder(orderId);
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    // If the user cancels, just dismiss the dialog
+                    dialog.dismiss();
+                })
+                .setCancelable(false) // Prevent dialog from closing if the user taps outside
+                .show();
     }
 
     private void loadOrderStatusHistory(String orderId) {
@@ -126,29 +144,32 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 statusHistoryLayout.removeAllViews();
-                boolean isDelivered = false; // Flag to check if order is delivered
+                String latestStatus = "";
+
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         String status = snapshot.child("status").getValue(String.class);
                         String timestamp = snapshot.child("timestamp").getValue(String.class);
 
-                        // Dynamically create TextView for each status
                         TextView statusTextView = new TextView(OrderDetailsActivity.this);
                         statusTextView.setText("● " + status + " - " + timestamp);
                         statusTextView.setTextSize(14);
                         statusHistoryLayout.addView(statusTextView);
 
-                        // Check if the status is "Delivered"
-                        if ("Delivered".equals(status)) {
-                            isDelivered = true;
-                        }
+                        latestStatus = status;
                     }
-                    // Hide the edit button if the latest status is "Delivered"
-                    if (isDelivered) {
+
+                    if ("Order Created".equals(latestStatus)) {
+                        editOrderButton.setVisibility(View.VISIBLE);
+                        cancelOrderButton.setVisibility(View.VISIBLE);
+                    } else {
                         editOrderButton.setVisibility(View.GONE);
+                        cancelOrderButton.setVisibility(View.GONE);
                     }
                 } else {
                     Toast.makeText(OrderDetailsActivity.this, "No status history found for this order", Toast.LENGTH_SHORT).show();
+                    editOrderButton.setVisibility(View.GONE);
+                    cancelOrderButton.setVisibility(View.GONE);
                 }
             }
 
@@ -158,6 +179,38 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
             }
         });
     }
+
+
+    private void cancelOrder(String orderId) {
+        DatabaseReference orderStatusRef = FirebaseDatabase.getInstance().getReference("orders").child(orderId).child("statusHistory");
+
+        // Get the current timestamp in the desired format
+        String timestamp = getCurrentFormattedTimestamp();
+
+        // Create a HashMap to store status and timestamp
+        Map<String, Object> statusUpdate = new HashMap<>();
+        statusUpdate.put("status", "Cancelled");
+        statusUpdate.put("timestamp", timestamp);
+
+        // Push the new status update to Firebase
+        orderStatusRef.push().setValue(statusUpdate)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(OrderDetailsActivity.this, "Order has been cancelled successfully.", Toast.LENGTH_SHORT).show();
+                    editOrderButton.setVisibility(View.GONE);
+                    cancelOrderButton.setVisibility(View.GONE);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(OrderDetailsActivity.this, "Failed to cancel the order", Toast.LENGTH_SHORT).show();
+                    Log.e("OrderDetailsActivity", "Error while cancelling order", e);
+                });
+    }
+    private String getCurrentFormattedTimestamp() {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy h:mm a");
+        return dateFormat.format(new Date());
+    }
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

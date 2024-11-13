@@ -10,7 +10,7 @@ The app is built with **Android Studio using Java Language** as the backend for 
 
 ## 📱 Features
 
-- 🗺 **Real-time map tracking** of courier and delivery status.
+- 🗺 **Status tracking** of courier and delivery status.
 - 🏠 **Pickup and delivery location** selection using Google Places API.
 - 📦 **Package and recipient management**: Store package details, recipient information, and manage addresses.
 - 💰 **Order summary with pricing** details and easy checkout.

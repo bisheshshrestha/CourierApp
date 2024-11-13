@@ -16,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -88,49 +89,65 @@ public class ViewOrderActivity extends DrawerBaseActivity {
         });
     }
 
-    // Method to fetch orders from Firebase
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Fetch user ID from SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userUid = sharedPreferences.getString("user_uid", null);
+
+        if (userUid != null) {
+            // Refresh the order list by fetching the orders again
+            fetchOrders(userUid);
+        } else {
+            Toast.makeText(this, "User not logged in!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
     // Method to fetch orders from Firebase
     private void fetchOrders(String userUid) {
         FirebaseDatabase.getInstance().getReference("orders")
-                .orderByChild("userUid")
-                .equalTo(userUid)
+                .limitToLast(100) // Fetch the last 100 orders (adjust the limit as needed)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        orderDataList.clear(); // Clear list before adding new data
-                        orderList.clear(); // Clear the displayed list as well
+                        orderDataList.clear(); // Clear the data list
+                        orderList.clear(); // Clear the displayed list
 
+                        // Iterate through the fetched data
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Map<String, Object> orderData = (Map<String, Object>) snapshot.getValue();
-                            if (orderData != null) {
-                                orderData.put("orderId", snapshot.getKey()); // Store orderId in orderData map
-                                orderDataList.add(orderData); // Add to list
+                            if (orderData != null && userUid.equals(orderData.get("userUid"))) {
+                                orderData.put("orderId", snapshot.getKey()); // Add orderId to the data
+                                orderDataList.add(orderData); // Add to order data list
 
                                 // Extract order details
                                 String recipientName = safeGetString(orderData, "recipientName");
                                 String recipientPhone = safeGetString(orderData, "recipientPhone");
                                 String price = safeGetString(orderData, "price");
                                 String distance = safeGetString(orderData, "distance");
-
                                 String status = safeGetString(orderData, "status");
-                                if ("N/A".equals(status)) {
-                                    status = "Order Created";
-                                }
-                                    // Format the order summary string
+
+                                // Format the order details
                                 String orderDetails = String.format(
                                         "Name: %s\nPhone: %s\nPrice: Rs %s\nDistance: %s km\nStatus: %s",
                                         recipientName, recipientPhone, price, distance, status
                                 );
 
-
                                 orderList.add(orderDetails);
                             }
                         }
 
+                        // Reverse the lists to show the most recent orders first
+                        Collections.reverse(orderDataList);
+                        Collections.reverse(orderList);
+
+                        // Display the sorted list in the ListView
                         if (orderList.isEmpty()) {
                             Toast.makeText(ViewOrderActivity.this, "No orders found", Toast.LENGTH_SHORT).show();
                         } else {
-                            // Display orders in ListView
                             ArrayAdapter<String> adapter = new ArrayAdapter<>(ViewOrderActivity.this, android.R.layout.simple_list_item_1, orderList);
                             listViewOrders.setAdapter(adapter);
                         }
@@ -142,6 +159,8 @@ public class ViewOrderActivity extends DrawerBaseActivity {
                     }
                 });
     }
+
+
 
 
     // Helper method to safely retrieve string from map

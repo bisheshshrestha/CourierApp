@@ -11,6 +11,7 @@ import androidx.cardview.widget.CardView;
 
 import com.divyagyan.adminapp.databinding.ActivityMainBinding;
 import com.divyagyan.adminapp.databinding.ActivityPickupOrderBinding;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class MainActivity extends DrawerBaseActivity {
@@ -48,20 +49,31 @@ public class MainActivity extends DrawerBaseActivity {
 
         logoutCardView.setOnClickListener(view -> showLogoutConfirmationDialog());
     }
-        private void showLogoutConfirmationDialog() {
-            new AlertDialog.Builder(this)
-                    .setTitle("Logout Confirmation")
-                    .setMessage("Are you sure you want to log out?")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        Toast.makeText(MainActivity.this, "Logging out...", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-                        startActivity(intent);
-                        finish();
-                    })
-                    .setNegativeButton("No", (dialog, which) -> {
-                        dialog.dismiss();
-                    })
-                    .setCancelable(false)
-                    .show();
+    private void showLogoutConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Logout Confirmation")
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Sign out the user from Firebase Authentication
+                    FirebaseAuth.getInstance().signOut();
+
+                    // Clear "stay signed in" preference
+                    SharedPreferences preferences = getSharedPreferences("com.divyagyan.adminapp", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("staySignedIn", false);
+                    editor.apply();
+
+                    Toast.makeText(MainActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+
+                    // Redirect to SignInActivity
+                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
     }
+
 }

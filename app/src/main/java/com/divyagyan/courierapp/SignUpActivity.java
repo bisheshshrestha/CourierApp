@@ -113,33 +113,43 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void registerUser(String username, String password, String email, String phone, String address) {
+        // Use Firebase Authentication to create the user
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            User user = new User(username, password, email, phone, address);
+                            // Get the current user's UID
+                            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                            // Create a User object without the password
+                            User user = new User(username, email, phone, address);
+
+                            // Save the user object to the Realtime Database
                             FirebaseDatabase.getInstance().getReference("users")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    .child(userId)
+                                    .setValue(user)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             progressBar.setVisibility(View.GONE);
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(SignUpActivity.this, "User Registered Successfully", Toast.LENGTH_LONG).show();
                                                 startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                                                finish();
                                             } else {
-                                                Toast.makeText(SignUpActivity.this, "User Failed to Register", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(SignUpActivity.this, "User Registration Failed", Toast.LENGTH_LONG).show();
                                             }
                                         }
                                     });
                         } else {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(SignUpActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(SignUpActivity.this, "Authentication Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
     }
+
 
     private boolean validateInput(String userName, String password, String email, String phone, String address) {
         if (userName.isEmpty()) {
