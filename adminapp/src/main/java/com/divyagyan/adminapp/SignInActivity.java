@@ -46,14 +46,14 @@ public class SignInActivity extends Activity {
             String password = passwordEditText.getText().toString().trim();
 
             if (!email.isEmpty() && !password.isEmpty()) {
-                loginUser(email, password);
+                loginAdmin(email, password);
             } else {
                 Toast.makeText(SignInActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void loginUser(String email, String password) {
+    private void loginAdmin(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
 
         mAuth.signInWithEmailAndPassword(email, password)

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -23,7 +25,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
@@ -38,16 +39,15 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallback {
 
     // Constants
-    private static final LatLngBounds KATHMANDU_BOUNDS = new LatLngBounds(
-            new LatLng(27.605670, 85.206885),  // Southwest corner
-            new LatLng(27.815670, 85.375959)   // Northeast corner
-    );
+    private static final LatLng KATHMANDU_BOUNDS_SW = new LatLng(27.605670, 85.206885);
+    private static final LatLng KATHMANDU_BOUNDS_NE = new LatLng(27.815670, 85.375959);
 
     // Fields
     private GoogleMap mMap;
@@ -75,7 +75,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
 
         // Initialize Places API
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), "AIzaSyCL2N9v3XaFNGY7UPbuBfS0Ekntuv97D9Q"); // Replace with your API key
+            Places.initialize(getApplicationContext(), "AIzaSyDWSg4RBrsfoXa3hzH7orPJ7BDDHz4ETJQ");
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -110,13 +110,12 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
                 activityOrderBinding.labelPrice.setText(String.format("Price: Rs %.2f", price));
 
                 // Generate a unique order ID
-                String orderId = UUID.randomUUID().toString(); // Use UUID for order ID
+                String orderId = UUID.randomUUID().toString();
 
-                String trackingNumber = generateTrackingNumber(); // Generate tracking number
+                String trackingNumber = generateTrackingNumber();
                 String orderCreationTime = getCurrentDateTime();
 
-                // Save the order to Firebase
-                saveOrderToFirebase(orderId, pickupLocation, deliveryLocation, price, distance,packageDetails, recipientName, recipientPhone, orderCreationTime, trackingNumber);
+                placeOrder(orderId, pickupLocation, deliveryLocation, price, distance, packageDetails, recipientName, recipientPhone, orderCreationTime, trackingNumber);
             } else {
                 Toast.makeText(OrderActivity.this, "Please select both Pickup and Delivery locations", Toast.LENGTH_SHORT).show();
             }
@@ -149,7 +148,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
     private void setupAutocompletePickup() {
         AutocompleteSupportFragment autocompletePickup = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_pickup_address);
         autocompletePickup.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-        autocompletePickup.setLocationRestriction(RectangularBounds.newInstance(KATHMANDU_BOUNDS));
+        autocompletePickup.setLocationRestriction(RectangularBounds.newInstance(KATHMANDU_BOUNDS_SW, KATHMANDU_BOUNDS_NE));
 
         autocompletePickup.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -158,6 +157,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
                 mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Location")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pickupLocation, 12));
+                updateLocationText();
                 drawLineAndCalculatePrice();
             }
 
@@ -171,7 +171,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
     private void setupAutocompleteDelivery() {
         AutocompleteSupportFragment autocompleteDelivery = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_delivery_address);
         autocompleteDelivery.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-        autocompleteDelivery.setLocationRestriction(RectangularBounds.newInstance(KATHMANDU_BOUNDS));
+        autocompleteDelivery.setLocationRestriction(RectangularBounds.newInstance(KATHMANDU_BOUNDS_SW, KATHMANDU_BOUNDS_NE));
 
         autocompleteDelivery.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -180,6 +180,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
                 mMap.addMarker(new MarkerOptions().position(deliveryLocation).title("Delivery Location")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deliveryLocation, 12));
+                updateLocationText();
                 drawLineAndCalculatePrice();
             }
 
@@ -190,8 +191,44 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
         });
     }
 
+    // Update the UI with selected locations
+    private void updateLocationText() {
+        if (pickupLocation != null) {
+            String pickupAddress = getHumanReadableAddress(pickupLocation.latitude, pickupLocation.longitude);
+            AutocompleteSupportFragment autocompletePickup = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_pickup_address);
+            if (autocompletePickup != null) {
+                autocompletePickup.setText(pickupAddress);
+            }
+        }
+
+        if (deliveryLocation != null) {
+            String deliveryAddress = getHumanReadableAddress(deliveryLocation.latitude, deliveryLocation.longitude);
+            AutocompleteSupportFragment autocompleteDelivery = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_delivery_address);
+            if (autocompleteDelivery != null) {
+                autocompleteDelivery.setText(deliveryAddress);
+            }
+        }
+    }
+    private String getHumanReadableAddress(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                // Get the address line (full address) or any other part of the address you want
+                return address.getAddressLine(0);
+            } else {
+                return "Unknown Location";
+            }
+        } catch (Exception e) {
+            Log.e("OrderActivity", "Geocoder failed", e);
+            return "Unable to determine address";
+        }
+    }
+
+
     // Firebase Methods
-    private void saveOrderToFirebase(String orderId, LatLng pickupLocation, LatLng deliveryLocation, double price,double distance, String packageDetails, String recipientName, String recipientPhone, String orderCreationTime, String trackingNumber) {
+    private void placeOrder(String orderId, LatLng pickupLocation, LatLng deliveryLocation, double price, double distance, String packageDetails, String recipientName, String recipientPhone, String orderCreationTime, String trackingNumber) {
         DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders").child(orderId);
 
         // Create order data map
@@ -204,7 +241,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
         orderData.put("pickupLocation", pickupLocation);
         orderData.put("deliveryLocation", deliveryLocation);
         orderData.put("price", String.format("%.2f", price));
-        orderData.put("distance",String.format("%.2f", distance));
+        orderData.put("distance", String.format("%.2f", distance));
         orderData.put("status", "Order Created");
 
         // Save the order data without overwriting existing nodes
@@ -231,7 +268,6 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
         });
     }
 
-
     // Google Map Setup
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -244,7 +280,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
 
         getLocationPermission();
 
-        // Set a map click listener
+        // Set a map click listener to select locations
         mMap.setOnMapClickListener(latLng -> {
             if (pickupLocation == null) {
                 // Set pickup location
@@ -269,9 +305,9 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
             if (pickupLocation != null && deliveryLocation != null) {
                 drawLineAndCalculatePrice();
             }
+            updateLocationText();
         });
     }
-
 
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -328,7 +364,7 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
 
     // Generate a unique tracking number
     private String generateTrackingNumber() {
-        return "TRK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(); // Generates a unique tracking number
+        return "TRK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     // Get Current Date and Time
@@ -342,7 +378,6 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
     protected void onDestroy() {
         super.onDestroy();
 
-        // Properly shutdown the Places API to avoid memory leaks
         try {
             if (Places.isInitialized()) {
                 com.google.android.libraries.places.api.Places.deinitialize();
@@ -352,6 +387,4 @@ public class OrderActivity extends DrawerBaseActivity implements OnMapReadyCallb
             Log.e("OrderActivity", "Failed to deinitialize Places API", e);
         }
     }
-
-
 }

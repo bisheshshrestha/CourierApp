@@ -76,10 +76,6 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             startActivity(new Intent(this, ViewOrderActivity.class));
             overridePendingTransition(0, 0);
         }
-//        } else if (itemId == R.id.nav_report) {
-//            startActivity(new Intent(this, ReportActivity.class));
-//            overridePendingTransition(0, 0);
-        //}
         else if (itemId == R.id.nav_profile) {
             startActivity(new Intent(this, ProfileActivity.class));
             overridePendingTransition(0, 0);

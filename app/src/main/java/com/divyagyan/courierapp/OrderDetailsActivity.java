@@ -78,6 +78,8 @@ public class OrderDetailsActivity extends DrawerBaseActivity implements OnMapRea
         double deliveryLat = Double.parseDouble(intent.getStringExtra("deliveryLat"));
         double deliveryLng = Double.parseDouble(intent.getStringExtra("deliveryLng"));
 
+
+
         textViewTrackingNumber.setText("Tracking Number: " + trackingNumber);
         textViewPackageDetails.setText("Package Details: " + packageDetails);
         textViewRecipientName.setText("Recipient Name: " + recipientName);

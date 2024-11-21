@@ -29,7 +29,7 @@
 
         <item android:id="@+id/nav_payment"
             android:icon="@drawable/ic_profile"
-            android:title="Manage Payment"/>
+            android:title="Manage Billing"/>
 
         <item android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"

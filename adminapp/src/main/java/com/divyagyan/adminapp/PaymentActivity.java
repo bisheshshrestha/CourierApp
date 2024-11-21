@@ -29,11 +29,11 @@ public class PaymentActivity extends AppCompatActivity {
         completedOrdersTextView = findViewById(R.id.completedOrdersTextView);
 
         // Load income data from Firebase
-        loadIncomeData();
+        showBillingDetails();
         setupClickListeners();
     }
 
-    private void loadIncomeData() {
+    private void showBillingDetails() {
         FirebaseDatabase.getInstance().getReference("orders")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
